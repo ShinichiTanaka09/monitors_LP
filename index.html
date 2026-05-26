@@ -1,963 +1,921 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ワタカン！｜わたしの専属食事管理</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ワタカン！ | 管理栄養士との無料面談で食事診断</title>
+  <meta name="description" content="忙しい社会人向けのLINE食事改善サービス。まずは管理栄養士との無料面談で食生活を診断し、その後LINEで食事画像を送りながら無理なく改善を進めます。">
   <style>
     :root {
-      --green: #2f8f6f;
-      --green-dark: #123f33;
-      --green-soft: #e8f6f0;
-      --mint: #f3fbf7;
-      --yellow: #ffd56a;
-      --orange: #ff8f5a;
-      --text: #172522;
-      --sub: #66736f;
-      --white: #fff;
-      --line: rgba(18, 63, 51, 0.12);
-      --shadow: 0 22px 50px rgba(18, 63, 51, 0.12);
+      --green: #34B59D;
+      --green-deep: #178470;
+      --green-soft: #E9F0EF;
+      --green-pale: #F1FBF8;
+      --orange: #F2840E;
+      --orange-light: #FDA200;
+      --text: #333333;
+      --muted: #6A6A6A;
+      --line: #DDEAE7;
+      --white: #FFFFFF;
+      --shadow: 0 18px 42px rgba(29, 79, 68, .14);
+      --radius: 8px;
+      --max: 1080px;
     }
 
     * { box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
       color: var(--text);
-      background: var(--mint);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", sans-serif;
       line-height: 1.75;
+      letter-spacing: 0;
+      background: #fff;
     }
 
-    a { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
 
-    .wrap {
-      width: min(1080px, calc(100% - 36px));
-      margin: 0 auto;
+    .container {
+      width: min(var(--max), calc(100% - 36px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,.86);
+      border-bottom: 1px solid rgba(221,234,231,.7);
+      backdrop-filter: blur(14px);
     }
 
     .nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: rgba(243, 251, 247, 0.82);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav-inner {
-      height: 68px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      min-height: 66px;
+      gap: 16px;
     }
 
-    .logo {
-      font-size: 24px;
-      font-weight: 950;
-      letter-spacing: -0.08em;
-      color: var(--green-dark);
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green-deep);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), #26BBCC);
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .nav-cta {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 42px;
-      padding: 0 18px;
+      min-height: 42px;
+      padding: 10px 18px;
       border-radius: 999px;
-      background: var(--green-dark);
-      color: white;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 800;
-      box-shadow: 0 10px 24px rgba(18, 63, 51, 0.18);
+      background: linear-gradient(90deg, var(--orange-light), var(--orange));
+      color: #fff;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(242,132,14,.24);
     }
 
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 78px 0 58px;
+      padding: 116px 0 72px;
       background:
-        radial-gradient(circle at 85% 15%, rgba(255, 213, 106, 0.42), transparent 25%),
-        radial-gradient(circle at 10% 22%, rgba(47, 143, 111, 0.18), transparent 28%),
-        linear-gradient(135deg, #f3fbf7 0%, #eaf7f1 100%);
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      right: -110px;
-      bottom: -120px;
-      border-radius: 50%;
-      background: var(--green);
-      opacity: 0.16;
+        radial-gradient(circle at 10% 8%, rgba(253,162,0,.16), transparent 30%),
+        radial-gradient(circle at 86% 14%, rgba(52,181,157,.22), transparent 34%),
+        linear-gradient(180deg, #F1FBF8 0%, #FFFFFF 74%);
     }
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 48px;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 500px);
       align-items: center;
-      position: relative;
-      z-index: 1;
+      gap: 54px;
     }
 
-    .label {
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      padding: 8px 14px;
-      border: 1px solid var(--line);
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 9px 14px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
-      color: var(--green-dark);
-      font-size: 13px;
-      font-weight: 850;
-      box-shadow: 0 8px 22px rgba(18, 63, 51, 0.06);
+      background: #fff;
+      color: var(--orange);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 8px 22px rgba(29, 79, 68, .08);
     }
 
-    .label::before {
+    .badge::before {
       content: "";
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: var(--green);
+      background: var(--orange);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1, h2, h3 {
+      color: var(--text);
+      line-height: 1.35;
+      font-weight: 900;
+      text-wrap: pretty;
     }
 
     h1 {
-      margin: 24px 0 0;
-      font-size: clamp(46px, 7vw, 86px);
-      line-height: 1.03;
-      letter-spacing: -0.085em;
-      color: var(--green-dark);
+      margin-bottom: 20px;
+      font-size: clamp(38px, 6vw, 66px);
+      letter-spacing: 0;
     }
 
-    .hero h1 span {
-      display: block;
-      font-size: clamp(28px, 4.5vw, 54px);
-      color: var(--text);
-      letter-spacing: -0.07em;
-      margin-top: 10px;
+    h1 .accent,
+    h2 .accent {
+      color: var(--orange);
     }
 
-    .catch {
-      margin: 28px 0 0;
-      font-size: clamp(22px, 3.2vw, 36px);
-      line-height: 1.45;
-      font-weight: 950;
-      letter-spacing: -0.05em;
+    h2 {
+      margin-bottom: 18px;
+      font-size: clamp(28px, 4vw, 44px);
     }
 
-    .catch em {
-      font-style: normal;
-      background: linear-gradient(transparent 62%, rgba(255, 213, 106, 0.85) 62%);
+    h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
     }
 
-    .hero-text {
-      color: var(--sub);
-      font-size: 17px;
-      margin: 18px 0 0;
-      max-width: 620px;
+    .lead {
+      margin-bottom: 26px;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 19px);
+      line-height: 2;
     }
 
-    .hero-actions {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 32px;
-    }
-
-    .btn {
+    .cta {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 58px;
-      padding: 0 28px;
+      min-height: 62px;
+      padding: 17px 28px;
       border-radius: 999px;
-      font-weight: 950;
-      text-decoration: none;
-      letter-spacing: -0.03em;
+      background: linear-gradient(90deg, var(--orange-light), var(--orange));
+      color: #fff;
+      font-weight: 900;
+      line-height: 1.35;
+      box-shadow: 0 16px 30px rgba(242,132,14,.28);
       transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    .btn:hover { transform: translateY(-2px); }
-
-    .btn-main {
-      color: white;
-      background: var(--green-dark);
-      box-shadow: 0 18px 34px rgba(18, 63, 51, 0.22);
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 36px rgba(242,132,14,.34);
     }
 
-    .btn-sub {
-      color: var(--green-dark);
-      background: white;
-      border: 1px solid var(--line);
+    .cta::after {
+      content: "→";
+      margin-left: 10px;
+      font-size: 18px;
     }
 
     .micro {
-      margin-top: 12px;
-      color: var(--sub);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin: 16px 0 0;
+      padding: 0;
+      color: var(--muted);
+      font-size: 13px;
+      list-style: none;
+    }
+
+    .micro li {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .micro li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .hero-photo {
+      position: relative;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-photo img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: var(--radius);
+    }
+
+    .hero-card {
+      position: absolute;
+      left: -20px;
+      bottom: 34px;
+      width: min(270px, 70%);
+      padding: 16px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 14px 30px rgba(29, 79, 68, .16);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-card strong {
+      display: block;
+      color: var(--green-deep);
+      line-height: 1.5;
+    }
+
+    .hero-card span {
+      color: var(--muted);
       font-size: 13px;
     }
 
-    .phone {
-      position: relative;
-      width: min(390px, 100%);
-      margin-left: auto;
-      border-radius: 42px;
-      padding: 18px;
-      background: #132720;
-      box-shadow: 0 30px 70px rgba(18, 63, 51, 0.28);
-      transform: rotate(2deg);
+    .section {
+      padding: 84px 0;
+      overflow: hidden;
     }
 
-    .phone-screen {
-      border-radius: 30px;
-      background: #f9fffc;
-      overflow: hidden;
+    .section.green {
+      background: var(--green-soft);
+    }
+
+    .section.grad {
+      background: linear-gradient(180deg, #fff 0%, var(--green-pale) 100%);
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin: 0 auto 36px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--green-deep);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid rgba(221,234,231,.9);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(29, 79, 68, .06);
+    }
+
+    .worry {
       padding: 22px;
     }
 
-    .chat-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--line);
-      font-weight: 900;
-      color: var(--green-dark);
-    }
-
-    .avatar {
+    .worry .num {
+      display: inline-grid;
+      place-items: center;
       width: 34px;
       height: 34px;
+      margin-bottom: 16px;
       border-radius: 50%;
-      background: var(--green);
+      background: linear-gradient(135deg, var(--green), #26BBCC);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .worry p,
+    .feature p,
+    .voice p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .diagnosis {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 34px;
+      align-items: center;
+      padding: 34px;
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .photo-strip {
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .photo-strip img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .steps li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      background: var(--green-pale);
+      font-weight: 800;
+    }
+
+    .steps b {
+      color: var(--orange);
+      white-space: nowrap;
+    }
+
+    .feature {
+      padding: 26px;
+    }
+
+    .feature-icon {
       display: grid;
       place-items: center;
-      color: white;
-      font-weight: 950;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 18px;
+      border-radius: 50%;
+      background: var(--green-pale);
+      color: var(--green-deep);
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .chat-panel {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .chat-card {
+      padding: 24px;
+      border-radius: var(--radius);
+      background: #EAF4F2;
+      box-shadow: var(--shadow);
     }
 
     .bubble {
       width: fit-content;
-      max-width: 95%;
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 20px;
+      max-width: 88%;
+      margin-bottom: 12px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      background: #fff;
       font-size: 14px;
-      line-height: 1.6;
-      box-shadow: 0 8px 18px rgba(18, 63, 51, 0.06);
+      line-height: 1.75;
     }
 
     .bubble.user {
       margin-left: auto;
-      background: var(--green);
-      color: white;
-      border-bottom-right-radius: 6px;
+      background: #CFF6E8;
     }
 
-    .bubble.coach {
-      background: var(--green-soft);
-      color: var(--green-dark);
-      border-bottom-left-radius: 6px;
-      font-weight: 750;
-    }
-
-    .meal-card {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 20px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      box-shadow: 0 8px 18px rgba(18, 63, 51, 0.06);
-    }
-
-    .meal-card-title {
-      font-size: 13px;
-      font-weight: 900;
-      color: var(--green-dark);
-      margin-bottom: 10px;
-    }
-
-    .meal-photos {
+    .ba-list {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 12px;
     }
 
-    .meal-photo {
-      aspect-ratio: 1 / 1;
-      border-radius: 14px;
+    .ba {
       display: grid;
-      place-items: center;
-      font-size: 28px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #e8f6f0, #d7efe6);
-      color: var(--green-dark);
-    }
-
-    .meal-caption {
-      font-size: 12px;
-      color: var(--sub);
-      line-height: 1.6;
-    }
-
-    .floating-card {
-      position: absolute;
-      left: -26px;
-      bottom: 52px;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-      transform: rotate(-5deg);
-      font-weight: 950;
-      color: var(--green-dark);
-    }
-
-    section {
-      padding: 70px 0;
-    }
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .section-title p {
-      margin: 0 0 8px;
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 950;
-      letter-spacing: 0.10em;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: clamp(28px, 4.2vw, 48px);
-      line-height: 1.32;
-      letter-spacing: -0.065em;
-      color: var(--green-dark);
-    }
-
-    .pain {
-      background: white;
-    }
-
-    .pain-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .pain-card {
-      position: relative;
-      min-height: 190px;
-      padding: 28px;
-      border-radius: 30px;
-      background: var(--mint);
-      border: 1px solid var(--line);
-      overflow: hidden;
-    }
-
-    .pain-card::after {
-      content: attr(data-num);
-      position: absolute;
-      right: 18px;
-      bottom: -20px;
-      font-size: 86px;
-      line-height: 1;
-      font-weight: 950;
-      color: rgba(47, 143, 111, 0.10);
-      letter-spacing: -0.08em;
-    }
-
-    .pain-card h3 {
-      margin: 0 0 12px;
-      font-size: 22px;
-      line-height: 1.35;
-      letter-spacing: -0.05em;
-    }
-
-    .pain-card p {
-      margin: 0;
-      color: var(--sub);
-      font-size: 15px;
-    }
-
-    .answer {
-      background:
-        linear-gradient(180deg, var(--mint), #fff 70%);
-    }
-
-    .answer-box {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 28px;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
       align-items: stretch;
     }
 
-    .big-copy {
-      border-radius: 34px;
-      background: var(--green-dark);
-      color: white;
-      padding: 42px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+    .ba div {
+      padding: 18px;
+      border-radius: var(--radius);
+      font-weight: 900;
     }
 
-    .big-copy h2 { color: white; }
-
-    .big-copy p {
-      color: rgba(255, 255, 255, 0.78);
-      margin: 18px 0 0;
-      font-size: 16px;
+    .before {
+      background: #EEF3F3;
+      color: var(--muted);
     }
 
-    .point-list {
-      display: grid;
-      gap: 14px;
+    .after {
+      background: linear-gradient(90deg, var(--green), #26BBCC);
+      color: #fff;
     }
 
-    .point {
-      display: grid;
-      grid-template-columns: 54px 1fr;
-      gap: 16px;
-      align-items: center;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 20px;
-      box-shadow: 0 12px 28px rgba(18, 63, 51, 0.06);
-    }
-
-    .point-icon {
-      width: 54px;
-      height: 54px;
-      border-radius: 20px;
-      background: var(--green-soft);
-      color: var(--green-dark);
+    .arrow {
       display: grid;
       place-items: center;
+      color: var(--orange);
       font-size: 24px;
-      font-weight: 950;
+      font-weight: 900;
     }
 
-    .point h3 {
-      margin: 0 0 3px;
-      font-size: 19px;
-      letter-spacing: -0.04em;
+    .voice {
+      padding: 24px;
     }
 
-    .point p {
-      margin: 0;
-      color: var(--sub);
-      font-size: 14px;
+    .voice strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--green-deep);
     }
 
-    .how {
-      background: white;
-    }
-
-    .flow {
+    .price-box {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-
-    .flow-card {
-      position: relative;
-      padding: 26px 22px;
-      border-radius: 28px;
-      background: var(--mint);
-      border: 1px solid var(--line);
-      text-align: center;
-    }
-
-    .flow-card b {
-      display: inline-grid;
-      place-items: center;
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      background: var(--green-dark);
-      color: white;
-      margin-bottom: 16px;
-      font-size: 18px;
-    }
-
-    .flow-card h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-      letter-spacing: -0.04em;
-    }
-
-    .flow-card p {
-      margin: 0;
-      color: var(--sub);
-      font-size: 14px;
-    }
-
-    .sample {
-      background: var(--green-soft);
-      overflow: hidden;
-    }
-
-    .sample-grid {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 34px;
-      align-items: center;
-    }
-
-    .sample-copy h2 { text-align: left; }
-
-    .sample-copy p {
-      color: var(--sub);
-      margin: 18px 0 0;
-    }
-
-    .sheet {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 34px;
-      padding: 28px;
-      box-shadow: var(--shadow);
-      transform: rotate(-1deg);
-    }
-
-    .sheet-title {
-      padding: 16px;
-      border: 2px solid var(--green);
-      border-radius: 18px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 950;
-      color: var(--green-dark);
-      letter-spacing: -0.04em;
-      margin-bottom: 16px;
-    }
-
-    .sheet-row {
-      display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 12px;
-      padding: 13px 0;
-      border-bottom: 1px solid var(--line);
-      font-size: 14px;
-    }
-
-    .sheet-row:last-child { border-bottom: none; }
-
-    .sheet-row b { color: var(--green-dark); }
-    .sheet-row span { color: var(--sub); }
-
-    .fit {
-      background: white;
-    }
-
-    .fit-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 22px;
-    }
-
-    .fit-card {
-      border-radius: 32px;
-      padding: 32px;
-      border: 1px solid var(--line);
-    }
-
-    .fit-card.good {
-      background: var(--green-dark);
-      color: white;
-    }
-
-    .fit-card.bad {
-      background: #fffaf0;
-    }
-
-    .fit-card h3 {
-      margin: 0 0 16px;
-      font-size: 24px;
-      letter-spacing: -0.05em;
-    }
-
-    .fit-card ul {
-      margin: 0;
-      padding-left: 1.2em;
-    }
-
-    .fit-card li { margin: 8px 0; }
-    .fit-card.good li { color: rgba(255,255,255,.86); }
-    .fit-card.bad li { color: var(--sub); }
-
-    .price {
-      background:
-        radial-gradient(circle at 15% 10%, rgba(255, 213, 106, .35), transparent 24%),
-        var(--mint);
-    }
-
-    .price-card {
-      max-width: 760px;
-      margin: 0 auto;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 36px;
-      padding: 34px;
-      box-shadow: var(--shadow);
-      display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
       gap: 24px;
       align-items: center;
+      padding: 34px;
+      border: 2px solid rgba(242,132,14,.18);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
     }
 
-    .price-card h3 {
-      margin: 0 0 8px;
-      font-size: 26px;
-      color: var(--green-dark);
-      letter-spacing: -0.05em;
-    }
-
-    .price-card p {
+    .price-list {
+      display: grid;
+      gap: 10px;
       margin: 0;
-      color: var(--sub);
+      padding: 0;
+      list-style: none;
     }
 
-    .price-tag {
-      text-align: right;
-      font-size: 36px;
-      font-weight: 950;
-      color: var(--green-dark);
-      letter-spacing: -0.06em;
+    .price-list li {
+      padding: 13px 15px;
+      border-radius: var(--radius);
+      background: var(--green-pale);
+      color: var(--muted);
+      font-weight: 800;
     }
 
-    .price-tag span {
-      display: block;
-      font-size: 13px;
-      color: var(--sub);
-      letter-spacing: 0;
+    .faq {
+      display: grid;
+      gap: 12px;
+      max-width: 860px;
+      margin-inline: auto;
     }
 
-    .cta {
-      position: relative;
+    .faq-item {
       overflow: hidden;
-      padding: 88px 0;
-      background: var(--green-dark);
-      color: white;
-      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
     }
 
-    .cta::before,
-    .cta::after {
-      content: "";
-      position: absolute;
+    .faq-q {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      padding: 18px 20px;
+      border: 0;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-weight: 900;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .faq-q span {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: rgba(255,255,255,.08);
+      background: var(--green-pale);
+      color: var(--green-deep);
+      transition: transform .2s ease;
     }
 
-    .cta::before {
-      width: 260px;
-      height: 260px;
-      left: -80px;
-      top: -120px;
+    .faq-a {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows .24s ease;
     }
 
-    .cta::after {
-      width: 360px;
-      height: 360px;
-      right: -160px;
-      bottom: -180px;
+    .faq-a > div { overflow: hidden; }
+
+    .faq-a p {
+      margin: 0;
+      padding: 0 20px 18px;
+      color: var(--muted);
     }
 
-    .cta .wrap { position: relative; z-index: 1; }
+    .faq-item.open .faq-a { grid-template-rows: 1fr; }
+    .faq-item.open .faq-q span { transform: rotate(45deg); }
 
-    .cta h2 {
-      color: white;
-      font-size: clamp(32px, 5vw, 56px);
-    }
-
-    .cta p {
-      max-width: 680px;
-      margin: 18px auto 30px;
-      color: rgba(255,255,255,.78);
-    }
-
-    .cta .btn-main {
-      background: white;
-      color: var(--green-dark);
-    }
-
-    footer {
-      padding: 24px 0;
+    .final {
+      padding: 58px 28px;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(253,162,0,.28), transparent 30%),
+        linear-gradient(90deg, #34B59D, #178470);
+      color: #fff;
       text-align: center;
-      color: var(--sub);
-      font-size: 13px;
-      background: #eef8f3;
+      box-shadow: var(--shadow);
     }
 
-    @media (max-width: 900px) {
+    .final h2,
+    .final .lead { color: #fff; }
+
+    .final .micro {
+      justify-content: center;
+      color: rgba(255,255,255,.9);
+    }
+
+    .final .micro li::before { color: #fff; }
+
+    .footer {
+      padding: 36px 0 100px;
+      background: #1F2937;
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .footer-brand {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+    }
+
+    .sticky-cta {
+      position: fixed;
+      z-index: 60;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: none;
+      padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .sticky-cta .cta {
+      width: 100%;
+      min-height: 54px;
+      padding: 14px 18px;
+      font-size: 15px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .nav-links a:not(.nav-cta) { display: none; }
       .hero-grid,
-      .answer-box,
-      .sample-grid,
-      .fit-grid,
-      .price-card {
+      .diagnosis,
+      .chat-panel,
+      .price-box {
         grid-template-columns: 1fr;
       }
+      .grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-card { left: 12px; bottom: 24px; }
+    }
 
-      .phone {
-        margin: 10px auto 0;
-        transform: none;
+    @media (max-width: 640px) {
+      .container { width: min(100% - 28px, var(--max)); }
+      .site-header { position: absolute; }
+      .nav { min-height: 60px; }
+      .nav-cta { display: none; }
+      .hero { padding: 86px 0 54px; }
+      .hero-grid { gap: 30px; }
+      .cta { width: 100%; min-height: 58px; padding-inline: 16px; }
+      .micro { justify-content: center; text-align: center; }
+      .hero .micro { justify-content: flex-start; text-align: left; }
+      .hero-photo { padding: 10px; }
+      .hero-photo img { aspect-ratio: 4 / 4.6; }
+      .hero-card { width: calc(100% - 44px); }
+      .section { padding: 62px 0; }
+      .grid.cols-2,
+      .grid.cols-3 { grid-template-columns: 1fr; }
+      .diagnosis,
+      .price-box { padding: 22px; }
+      .ba { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
       }
+      .sticky-cta { display: block; }
+    }
 
-      .pain-grid,
-      .flow {
-        grid-template-columns: 1fr;
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
       }
-
-      .floating-card {
-        left: 10px;
-        bottom: 30px;
-      }
-
-      section { padding: 58px 0; }
-
-      .price-tag { text-align: left; }
     }
   </style>
 </head>
 <body>
-  <header class="nav">
-    <div class="wrap nav-inner">
-      <div class="logo">ワタカン！</div>
-      <a href="#contact" class="nav-cta">無料相談する</a>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="ワタカン！トップ"><span class="brand-mark">W</span>ワタカン！</a>
+      <nav class="nav-links" aria-label="ナビゲーション">
+        <a href="#diagnosis">無料面談</a>
+        <a href="#voice">利用者の声</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta js-cta" href="https://line.me/R/ti/p/@sample">無料面談予約</a>
+      </nav>
     </div>
   </header>
 
-  <main>
+  <main id="top">
     <section class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <div class="label">忙しい人のための食事改善サポート</div>
-          <h1>ワタカン！<span>わたしの管理栄養士</span></h1>
-          <p class="catch">がんばるダイエット、<br><em>そろそろ卒業しませんか？</em></p>
-          <p class="hero-text">コンビニでも、外食でも、帰宅が遅くても大丈夫。管理栄養士があなたの生活に合わせて「今日からできる食事改善」を一緒に考えます。</p>
-          <div class="hero-actions">
-            <a href="#contact" class="btn btn-main">まずは無料相談する</a>
-            <a href="#how" class="btn btn-sub">サービスを見る</a>
-          </div>
-          <div class="micro">無理な制限なし / 自炊できなくてもOK / 忙しい社会人向け</div>
+      <div class="container hero-grid">
+        <div class="reveal">
+          <div class="badge">管理栄養士との無料面談からスタート</div>
+          <h1>専属の管理栄養士が、<span class="accent">あなた専用の食べ方</span>を一緒につくる。</h1>
+          <p class="lead">1人1人の目標や性格、生活リズムに合わせてマンツーマンでサポート。心にも体にも負担がかからないように、無理のない提案で健康的な食生活へ導きます。</p>
+          <a class="cta js-cta" href="https://line.me/R/ti/p/@sample">公式LINEで無料面談を予約する</a>
+          <ul class="micro">
+            <li>登録無料</li>
+            <li>面談で食事診断</li>
+            <li>専用アプリ不要</li>
+            <li>無理な勧誘なし</li>
+          </ul>
         </div>
-
-        <div class="phone">
-          <div class="phone-screen">
-            <div class="chat-head">
-              <div class="avatar">栄</div>
-              管理栄養士とのLINEサポート
-            </div>
-
-            <div class="bubble user">今日食べたものです！</div>
-
-            <div class="meal-card">
-              <div class="meal-card-title">今日の食事</div>
-              <div class="meal-photos">
-                <div class="meal-photo">🥣</div>
-                <div class="meal-photo">🍙</div>
-                <div class="meal-photo">🍝</div>
-              </div>
-              <div class="meal-caption">
-                朝：ヨーグルト・バナナ<br>
-                昼：おにぎり・カフェラテ<br>
-                夜：パスタ・サラダ
-              </div>
-            </div>
-
-            <div class="bubble coach">
-              写真ありがとうございます！<br>
-              今日の食事は、朝に軽く食べられているのがとても良いです◎<br>
-              一方で、昼が少なめなので、夕方や夜にお腹が空きやすい流れです。
-            </div>
-
-            <div class="bubble coach">
-              明日は昼に<strong>たんぱく質を1品追加</strong>してみましょう。<br>
-              例えば、<strong>サラダチキン・ゆで卵・豆腐バー</strong>などがおすすめです。<br>
-              それだけでも、夜の食べすぎ予防につながります。
-            </div>
-
-            <div class="bubble user">わかりやすいです！これならできそうです！</div>
-          </div>
-          <div class="floating-card">食事改善は、もっとラクでいい。</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="pain">
-      <div class="wrap">
-        <div class="section-title">
-          <p>WHY HARD?</p>
-          <h2>痩せたいのに、続かない。<br>それには理由があります。</h2>
-        </div>
-        <div class="pain-grid">
-          <div class="pain-card" data-num="01">
-            <h3>毎回、何を食べるか迷う</h3>
-            <p>正解がわからないから、結局いつもの食事に戻ってしまう。</p>
-          </div>
-          <div class="pain-card" data-num="02">
-            <h3>完璧にやろうとして疲れる</h3>
-            <p>カロリー計算、自炊、我慢。最初は頑張れても長く続かない。</p>
-          </div>
-          <div class="pain-card" data-num="03">
-            <h3>一人だと立て直せない</h3>
-            <p>食べすぎた日があると「もういいや」と崩れやすい。</p>
+        <div class="hero-photo reveal">
+          <img src="assets/watakan-dietitian-hero.png" alt="20代後半の女性管理栄養士が食事改善をサポートする写真">
+          <div class="hero-card">
+            <strong>専属管理栄養士が伴走。</strong>
+            <span>目標・性格・生活リズムに合わせて提案します。</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="answer" id="how">
-      <div class="wrap answer-box">
-        <div class="big-copy">
-          <h2>だから、ワタカン！は<br>“がんばらせない”。</h2>
-          <p>生活をガラッと変えるのではなく、今の食事に少しだけ足す・選び方を変える・食べる順番を整える。小さな改善を、管理栄養士と一緒に積み上げます。</p>
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">こんな悩みに</p>
+          <h2>必要なのは、あなたの生活に合う続け方です。</h2>
+          <p class="lead">正しい情報を知っていても、毎日の生活に落とし込めなければ続きません。</p>
         </div>
-        <div class="point-list">
-          <div class="point">
-            <div class="point-icon">写</div>
-            <div><h3>食事写真を送るだけ</h3><p>細かい記録より、まずは写真でOK。負担を減らします。</p></div>
-          </div>
-          <div class="point">
-            <div class="point-icon">選</div>
-            <div><h3>コンビニ・外食も提案</h3><p>自炊できない日も、選び方で整えられます。</p></div>
-          </div>
-          <div class="point">
-            <div class="point-icon">伴</div>
-            <div><h3>管理栄養士が伴走</h3><p>迷ったとき、崩れたときも、一緒に立て直します。</p></div>
-          </div>
-          <div class="point">
-            <div class="point-icon">続</div>
-            <div><h3>明日やることまで明確</h3><p>面談後は、次にやる行動をシートで見える化します。</p></div>
-          </div>
+        <div class="grid cols-3">
+          <article class="card worry reveal"><span class="num">1</span><h3>コンビニや外食が多い</h3><p>自炊前提のダイエット情報だと、現実の生活に合わない。</p></article>
+          <article class="card worry reveal"><span class="num">2</span><h3>夜に量が増えやすい</h3><p>残業後に空腹が強くなり、夕食の選び方や量が安定しない。</p></article>
+          <article class="card worry reveal"><span class="num">3</span><h3>記録アプリが面倒</h3><p>カロリー入力や細かい管理が続かず、いつの間にかやめてしまう。</p></article>
+          <article class="card worry reveal"><span class="num">4</span><h3>甘いものをやめられない</h3><p>カフェラテや間食をゼロにしようとして、反動が出る。</p></article>
+          <article class="card worry reveal"><span class="num">5</span><h3>何を選べばいいか迷う</h3><p>昼食、外食、夜遅い日。毎回判断するのがしんどい。</p></article>
+          <article class="card worry reveal"><span class="num">6</span><h3>自分に合う方法がわからない</h3><p>体重目標や性格、仕事の忙しさに合う進め方を決めきれない。</p></article>
         </div>
       </div>
     </section>
 
-    <section class="how">
-      <div class="wrap">
-        <div class="section-title">
-          <p>FLOW</p>
-          <h2>やることは、シンプル。</h2>
-        </div>
-        <div class="flow">
-          <div class="flow-card">
-            <b>1</b>
-            <h3>相談する</h3>
-            <p>悩み・目標・生活リズムをヒアリング。</p>
-          </div>
-          <div class="flow-card">
-            <b>2</b>
-            <h3>食事を送る</h3>
-            <p>写真やメモで普段の食事を共有。</p>
-          </div>
-          <div class="flow-card">
-            <b>3</b>
-            <h3>提案を受ける</h3>
-            <p>今日からできる改善策を具体的に提案。</p>
-          </div>
-          <div class="flow-card">
-            <b>4</b>
-            <h3>振り返る</h3>
-            <p>月1回、できたことと次の目標を整理。</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="sample">
-      <div class="wrap sample-grid">
-        <div class="sample-copy">
-          <div class="section-title" style="text-align:left;margin-bottom:0;">
-            <p>AFTER COUNSELING</p>
-            <h2>話して終わり、<br>ではありません。</h2>
-          </div>
-          <p>面談後は、あなた専用のフィードバックシートをお渡しします。今の課題、原因、改善戦略、明日からの3アクションまで整理するので「で、何をすればいいんだっけ？」がなくなります。</p>
-        </div>
-        <div class="sheet">
-          <div class="sheet-title">面談後フィードバックシート</div>
-          <div class="sheet-row"><b>お悩み</b><span>夜に食べすぎる / 夕方に甘いものが欲しくなる</span></div>
-          <div class="sheet-row"><b>原因</b><span>朝昼のたんぱく質不足で、夕方以降に反動が出やすい</span></div>
-          <div class="sheet-row"><b>戦略</b><span>昼にたんぱく質を1品追加。夜は汁物から始める</span></div>
-          <div class="sheet-row"><b>明日の行動</b><span>朝ヨーグルト / 昼サラダチキン追加 / 水1L</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="fit">
-      <div class="wrap">
-        <div class="section-title">
-          <p>FOR YOU</p>
-          <h2>こんな人に向いています。</h2>
-        </div>
-        <div class="fit-grid">
-          <div class="fit-card good">
-            <h3>おすすめの方</h3>
-            <ul>
-              <li>忙しくて食事管理に時間をかけられない</li>
-              <li>コンビニ・外食が多い</li>
-              <li>厳しい制限は続かない</li>
-              <li>一人だと挫折しやすい</li>
-              <li>健康的に痩せたい</li>
-            </ul>
-          </div>
-          <div class="fit-card bad">
-            <h3>おすすめしない方</h3>
-            <ul>
-              <li>短期間で極端に体重を落としたい</li>
-              <li>食事を一切変えずに痩せたい</li>
-              <li>厳格な制限メニューだけを求めている</li>
-              <li>すぐに結果が出ないと続けられない</li>
-              <li>健康よりも数字だけを優先したい</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="price">
-      <div class="wrap">
-        <div class="section-title">
-          <p>PLAN</p>
-          <h2>まずは、気軽に相談から。</h2>
-        </div>
-        <div class="price-card">
+    <section class="section green" id="diagnosis">
+      <div class="container">
+        <div class="diagnosis reveal">
           <div>
-            <h3>初回カウンセリング</h3>
-            <p>現在の食生活・お悩み・目標を整理し、あなたに合う改善方針を一緒に考えます。</p>
+            <p class="eyebrow">まずは無料面談</p>
+            <h2>面談の中で、今の食事の課題と改善ポイントを診断します。</h2>
+            <p class="lead">生活リズム・食事傾向・体重目標を管理栄養士がヒアリング。あなたに合う食べ方の方向性を、面談の中で整理します。</p>
+            <a class="cta js-cta" href="https://line.me/R/ti/p/@sample">公式LINEで無料面談を予約する</a>
           </div>
-          <div class="price-tag">¥0<span>モニター・初回相談</span></div>
+          <ul class="steps">
+            <li><b>01</b> 公式LINEから無料面談を予約</li>
+            <li><b>02</b> 面談で食生活・悩み・目標をヒアリング</li>
+            <li><b>03</b> 面談内で食事の課題と改善ポイントを診断</li>
+            <li><b>04</b> 希望者には継続サポートをご案内</li>
+            <li><b>05</b> 開始後はLINEで食事画像を送り、管理栄養士が伴走</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <section class="cta" id="contact">
-      <div class="wrap">
-        <h2>食事改善は、<br>もっと自分に合わせていい。</h2>
-        <p>完璧なダイエットではなく、続けられる食事改善を。まずはあなたの生活に合ったやり方を一緒に見つけましょう。</p>
-        <a href="#" class="btn btn-main">LINEで無料相談する</a>
+    <section class="section grad">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">ワタカン！の特徴</p>
+          <h2>専属管理栄養士が、目標と性格に合わせて伴走します。</h2>
+        </div>
+        <div class="grid cols-3">
+          <article class="card feature reveal"><div class="feature-icon">📷</div><h3>開始後は画像を送るだけ</h3><p>継続サポートでは、専用アプリも細かいカロリー入力も不要。いつものLINEで食事画像を送れます。</p></article>
+          <article class="card feature reveal"><div class="feature-icon">🥗</div><h3>現実の食事に対応</h3><p>コンビニ、外食、残業ごはん、飲み会後の調整まで相談できます。</p></article>
+          <article class="card feature reveal"><div class="feature-icon">💬</div><h3>マンツーマンで伴走</h3><p>目標や性格に合わせて、心にも体にも負担が少ない進め方を一緒に設計します。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="feedback">
+      <div class="container chat-panel">
+        <div class="photo-strip reveal">
+          <img src="assets/watakan-feedback-photo.png" alt="食事写真とスマホのチャット画面">
+        </div>
+        <div class="reveal">
+          <p class="eyebrow">返信イメージ</p>
+          <h2>あなたの生活に合わせて、次にできる一手を提案します。</h2>
+          <div class="chat-card">
+            <div class="bubble user">コンビニのおにぎり2個とカフェラテでした。</div>
+            <div class="bubble">おにぎりでエネルギーは取れています！ここにゆで卵かサラダチキンを足せると、午後の空腹感が出にくくなります。</div>
+            <div class="bubble user">カフェラテはやめた方がいいですか？</div>
+            <div class="bubble">いきなりゼロにせず、まずは週2回だけ無糖に変えるところから始めましょう。続けやすいペースで整えていきます。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section green">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Before / After</p>
+          <h2>食事が整うと、毎日の迷いが減っていく。</h2>
+        </div>
+        <div class="ba-list">
+          <div class="ba reveal"><div class="before">何を食べればいいかわからない</div><span class="arrow">→</span><div class="after">コンビニでも選び方がわかる</div></div>
+          <div class="ba reveal"><div class="before">自分に合う方法がわからない</div><span class="arrow">→</span><div class="after">目標や性格に合う進め方が決まる</div></div>
+          <div class="ba reveal"><div class="before">忙しいと全部崩れる</div><span class="arrow">→</span><div class="after">忙しい日の食べ方が決まる</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="voice">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">モニター利用者の声</p>
+          <h2>マンツーマンだから、自分の生活に落とし込みやすい。</h2>
+        </div>
+        <div class="grid cols-3">
+          <article class="card voice reveal"><strong>20代女性 / 会社員</strong><p>コンビニが多い生活でも、選び方を少し変えるだけで食後の罪悪感が減りました。</p></article>
+          <article class="card voice reveal"><strong>30代女性 / 営業職</strong><p>飲み会や外食が多くても、翌日の調整方法を教えてもらえるので続けやすかったです。</p></article>
+          <article class="card voice reveal"><strong>20代男性 / デスクワーク</strong><p>自分の生活リズムに合わせて提案してもらえるので、無理なく続けるイメージが持てました。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grad">
+      <div class="container">
+        <div class="price-box reveal">
+          <div>
+            <p class="eyebrow">料金・ご案内</p>
+            <h2>まずは無料面談だけでも大丈夫です。</h2>
+            <p class="lead">面談で食事の状態を診断した上で、継続サポートをご希望の方には、お悩みや目標に合わせて必要なプランをご案内します。無理な勧誘はありません。</p>
+            <a class="cta js-cta" href="https://line.me/R/ti/p/@sample">公式LINEで無料面談を予約する</a>
+          </div>
+          <ul class="price-list">
+            <li>ライトプラン：月額9,800円〜</li>
+            <li>スタンダードプラン：月額19,800円〜</li>
+            <li>プレミアムプラン：月額29,800円〜</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">FAQ</p>
+          <h2>よくある質問</h2>
+        </div>
+        <div class="faq reveal">
+          <div class="faq-item open"><button class="faq-q" type="button">公式LINEに登録したら、すぐに申し込みが必要ですか？<span>＋</span></button><div class="faq-a"><div><p>いいえ。まずは無料面談だけでも大丈夫です。面談の中で食生活を診断し、必要に応じてサポート内容をご案内します。</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button">自炊していなくても大丈夫ですか？<span>＋</span></button><div class="faq-a"><div><p>大丈夫です。コンビニ・外食が多い方でも、選び方や組み合わせを一緒に整えます。</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button">忙しくて食事が乱れやすくても相談できますか？<span>＋</span></button><div class="faq-a"><div><p>相談できます。残業、外食、コンビニなど、今の生活リズムに合わせて現実的な改善方法を一緒に考えます。</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button">厳しい食事制限はありますか？<span>＋</span></button><div class="faq-a"><div><p>一律の厳しい制限ではなく、目標や性格、生活リズムに合わせて無理のない提案を行います。</p></div></div></div>
+          <div class="faq-item"><button class="faq-q" type="button">担当者は毎回変わりますか？<span>＋</span></button><div class="faq-a"><div><p>継続サポートでは、専属の管理栄養士があなたの状況を把握しながらマンツーマンで伴走します。</p></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="final reveal">
+          <h2>専属の管理栄養士と、無理のない食生活をつくる。</h2>
+          <p class="lead">まずは無料面談で、あなたの目標や生活リズムに合う進め方を確認してみませんか？</p>
+          <a class="cta js-cta" href="https://line.me/R/ti/p/@sample">公式LINEで無料面談を予約する</a>
+          <ul class="micro">
+            <li>登録無料</li>
+            <li>面談で食事診断</li>
+            <li>無理な勧誘なし</li>
+          </ul>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    © ワタカン！ / わたしの管理栄養士
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="footer-brand">ワタカン！</div>
+        <div>Copyright © ワタカン！ All Rights Reserved.</div>
+      </div>
+      <div class="footer-links">
+        <a href="#">運営者情報</a>
+        <a href="#">プライバシーポリシー</a>
+        <a href="#">特定商取引法に基づく表記</a>
+      </div>
+    </div>
   </footer>
+
+  <div class="sticky-cta">
+    <a class="cta js-cta" href="https://line.me/R/ti/p/@sample">公式LINEで無料面談を予約する</a>
+  </div>
+
+  <script>
+    const LINE_URL = 'https://line.me/R/ti/p/@sample';
+    let ctaClickCount = 0;
+
+    document.querySelectorAll('.js-cta').forEach((button) => {
+      button.href = LINE_URL;
+      button.addEventListener('click', () => {
+        ctaClickCount += 1;
+        console.log('CTA click count:', ctaClickCount, 'url:', LINE_URL);
+      });
+    });
+
+    document.querySelectorAll('.faq-q').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.closest('.faq-item').classList.toggle('open');
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .12 });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
 </body>
 </html>
